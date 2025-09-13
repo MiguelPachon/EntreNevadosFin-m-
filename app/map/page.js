@@ -1,4 +1,6 @@
 "use client";
+export const dynamic = 'force-dynamic';
+
 import MapView from "../dashboard/components/MapView"; // Ajusta la ruta según tu proyecto
 
 export default function MapPage() {
