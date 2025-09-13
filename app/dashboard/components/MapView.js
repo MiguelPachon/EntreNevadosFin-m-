@@ -2,7 +2,7 @@
 
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { useEffect, useState } from "react";
-import { supabase } from "../../lib/supabaseClient"; // Ajusta la ruta según tu proyecto
+import { supabase } from "../../../lib/supabaseClient";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useSearchParams } from "next/navigation";
