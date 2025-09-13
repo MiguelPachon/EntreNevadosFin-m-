@@ -7,16 +7,7 @@ import Navbar from "../../components/Navbar";
 import dynamic from "next/dynamic";
 import Plans from "./components/PlansList.js";
 import Filters from '../../components/Filters';
-import SitesList from '../../components/SitesList';
 
-export default function DashboardPage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Sitios turísticos</h1>
-      <SitesList />
-    </div>
-  )
-}
 
 
 const MapView = dynamic(() => import("./components/MapView"), { ssr: false });
