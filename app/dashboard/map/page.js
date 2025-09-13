@@ -1,5 +1,5 @@
 "use client";             // necesario porque Leaflet usa window
-import MapView from "../dashboard/components/MapView.js";
+import MapView from "../../dashboard/components/MapView.js";
 
 export const dynamic = "force-dynamic"; // evita prerender en el servidor
 
