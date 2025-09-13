@@ -62,7 +62,7 @@ export default function Navbar() {
 
         <nav className="flex items-center gap-6">
           <Link href="/">Inicio</Link>
-          <Link href="#">Categorías</Link>
+          <Link href="/dashboard/sites">Categorías</Link>
 
           {/* Si no hay usuario, mostrar Ingresar / Registrarse */}
           {!sessionUser ? (
