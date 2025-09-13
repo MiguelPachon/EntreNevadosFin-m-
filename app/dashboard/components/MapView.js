@@ -1,12 +1,13 @@
-// app/dashboard/components/MapView.js
 "use client";
 
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { useEffect, useState } from "react";
+import { supabase } from "../../lib/supabaseClient"; // Ajusta la ruta según tu proyecto
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import { useSearchParams } from "next/navigation";
 
-// Asegúrate de tener /public/images/user-marker.png y /public/images/marker.png
+// Iconos personalizados
 const userIcon = new L.Icon({
   iconUrl: "/images/user-marker.png",
   iconSize: [32, 32],
@@ -17,6 +18,7 @@ const MarkerIcon = new L.Icon({
   iconSize: [28, 28],
 });
 
+// Componente para mover el mapa mediante eventos
 function FocusHandler() {
   const map = useMap();
   useEffect(() => {
@@ -31,8 +33,14 @@ function FocusHandler() {
 }
 
 export default function MapView() {
-  const [pos, setPos] = useState([4.4389, -75.2322]);
+  const searchParams = useSearchParams();
+  const filtersParam = searchParams.get("filters"); // Ej: "Montaña,Nevado"
+  const filters = filtersParam ? filtersParam.split(",") : [];
 
+  const [pos, setPos] = useState([4.4389, -75.2322]); // Posición inicial
+  const [points, setPoints] = useState([]);
+
+  // Obtener posición del usuario
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -43,20 +51,44 @@ export default function MapView() {
     }
   }, []);
 
-  const points = [
-    { id: 1, name: "Nevado del Tolima", coords: [4.6584, -75.2976] },
-    { id: 2, name: "Ibagué Centro", coords: [4.4389, -75.2322] },
-    { id: 3, name: "Parque Natural", coords: [4.55, -75.28] },
-  ];
+  // Traer sitios desde Supabase según filtros
+  useEffect(() => {
+    const fetchPoints = async () => {
+      let query = supabase
+        .from("sites")
+        .select("id, name, latitude, longitude, site_tags(tag_id, tags(name))");
+
+      if (filters.length > 0) {
+        query = query.contains("site_tags->tags->name", filters);
+      }
+
+      const { data, error } = await query;
+      if (!error && data) {
+        const mapped = data.map((s) => ({
+          id: s.id,
+          name: s.name,
+          coords: [s.latitude, s.longitude],
+        }));
+        setPoints(mapped);
+      }
+    };
+    fetchPoints();
+  }, [filters]);
 
   return (
     <MapContainer center={pos} zoom={9} style={{ height: "100%", width: "100%" }}>
       <FocusHandler />
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap contributors" />
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution="&copy; OpenStreetMap contributors"
+      />
+
+      {/* Marcador del usuario */}
       <Marker position={pos} icon={userIcon}>
         <Popup>Estás aquí</Popup>
       </Marker>
 
+      {/* Marcadores de sitios filtrados */}
       {points.map((pt) => (
         <Marker key={pt.id} position={pt.coords} icon={MarkerIcon}>
           <Popup>{pt.name}</Popup>
