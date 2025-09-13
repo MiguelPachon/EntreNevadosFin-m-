@@ -24,7 +24,7 @@ export default function SitesList() {
   const handleGoToMap = () => {
     if (filters.length === 0) return;
     const queryParam = filters.join(",");
-    router.push(`/map?filters=${encodeURIComponent(queryParam)}`);
+    router.push(`/dashboard/map?filters=${encodeURIComponent(queryParam)}`);
   };
 
   return (

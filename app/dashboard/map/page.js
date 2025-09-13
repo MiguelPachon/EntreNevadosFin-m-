@@ -1,7 +1,8 @@
-"use client";             // necesario porque Leaflet usa window
-import MapView from "../../dashboard/components/MapView.js";
+"use client";  // necesario porque MapView usa window
 
-export const dynamic = "force-dynamic"; // evita prerender en el servidor
+import MapView from "../../dashboard/components/MapView";
+
+export const dynamic = "force-dynamic"; // evita prerender y el error "window is not defined"
 
 export default function MapPage() {
   return (
@@ -10,3 +11,4 @@ export default function MapPage() {
     </div>
   );
 }
+
