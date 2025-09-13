@@ -18,7 +18,6 @@ const MarkerIcon = new L.Icon({
   iconSize: [28, 28],
 });
 
-// Componente para mover el mapa mediante eventos
 function FocusHandler() {
   const map = useMap();
   useEffect(() => {
@@ -37,10 +36,9 @@ export default function MapView() {
   const filtersParam = searchParams.get("filters"); // Ej: "Montaña,Nevado"
   const filters = filtersParam ? filtersParam.split(",") : [];
 
-  const [pos, setPos] = useState([4.4389, -75.2322]); // Posición inicial
+  const [pos, setPos] = useState([4.4389, -75.2322]);
   const [points, setPoints] = useState([]);
 
-  // Obtener posición del usuario
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -51,7 +49,6 @@ export default function MapView() {
     }
   }, []);
 
-  // Traer sitios desde Supabase según filtros
   useEffect(() => {
     const fetchPoints = async () => {
       let query = supabase
@@ -83,12 +80,10 @@ export default function MapView() {
         attribution="&copy; OpenStreetMap contributors"
       />
 
-      {/* Marcador del usuario */}
       <Marker position={pos} icon={userIcon}>
         <Popup>Estás aquí</Popup>
       </Marker>
 
-      {/* Marcadores de sitios filtrados */}
       {points.map((pt) => (
         <Marker key={pt.id} position={pt.coords} icon={MarkerIcon}>
           <Popup>{pt.name}</Popup>
