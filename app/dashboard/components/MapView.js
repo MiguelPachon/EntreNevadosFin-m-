@@ -2,12 +2,11 @@
 
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { useEffect, useState } from "react";
-import { supabase } from "../../../lib/supabaseClient";
+import { supabase } from "../../../lib/supabaseClient"; // ajusta la ruta
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useSearchParams } from "next/navigation";
 
-// Iconos personalizados
 const userIcon = new L.Icon({
   iconUrl: "/images/user-marker.png",
   iconSize: [32, 32],
@@ -38,7 +37,9 @@ export default function MapView() {
 
   const [pos, setPos] = useState([4.4389, -75.2322]);
   const [points, setPoints] = useState([]);
+  const [alertShown, setAlertShown] = useState(false); // para no repetir alert
 
+  // Posición del usuario
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -49,6 +50,7 @@ export default function MapView() {
     }
   }, []);
 
+  // Traer sitios filtrados
   useEffect(() => {
     const fetchPoints = async () => {
       let query = supabase
@@ -67,10 +69,16 @@ export default function MapView() {
           coords: [s.latitude, s.longitude],
         }));
         setPoints(mapped);
+
+        // Mostrar alerta si no hay sitios
+        if (mapped.length === 0 && !alertShown && filters.length > 0) {
+          alert("No hay sitios disponibles con esa etiqueta.");
+          setAlertShown(true);
+        }
       }
     };
     fetchPoints();
-  }, [filters]);
+  }, [filters, alertShown]);
 
   return (
     <MapContainer center={pos} zoom={9} style={{ height: "100%", width: "100%" }}>
@@ -80,10 +88,12 @@ export default function MapView() {
         attribution="&copy; OpenStreetMap contributors"
       />
 
+      {/* Marcador del usuario */}
       <Marker position={pos} icon={userIcon}>
         <Popup>Estás aquí</Popup>
       </Marker>
 
+      {/* Marcadores filtrados */}
       {points.map((pt) => (
         <Marker key={pt.id} position={pt.coords} icon={MarkerIcon}>
           <Popup>{pt.name}</Popup>
